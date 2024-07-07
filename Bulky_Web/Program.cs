@@ -1,8 +1,26 @@
+using Bulky.DataAccess.Repository;
+using Bulky.DataAccess.Repository.IRepository;
+using BulkyBook.DataAccess;
+using BulkyBook.DataAccess.Repository;
+using BulkyBook.DataAccess.Repository.IRepository;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<AppDbContext>(
+                options=>options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+builder.Services.Configure<FormOptions>(options =>
+{
+	options.MultipartBodyLengthLimit = 60000000; // Adjust to the size limit you need
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -17,11 +35,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
