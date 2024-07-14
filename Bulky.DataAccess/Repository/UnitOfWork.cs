@@ -16,12 +16,25 @@ namespace BulkyBook.DataAccess.Repository
 
         public ICategoryRepository Category { get; private set; }
         public IProductRepository Product { get; private set; }
+        public ICompanyRepository Company { get; private set; }
+        public IShoppingCartRepository ShoppingCart { get; private set; }
+        public IApplicationUserRepository ApplicationUser { get; private set; }
 
-        public UnitOfWork(AppDbContext db)
+		public IOrderDetailRepository OrderDetail { get; private set; }
+
+		public IOrderHeaderRepository OrderHeader { get; private set; }
+
+		public UnitOfWork(AppDbContext db)
         {
             this.db = db;
             Category = new CategoryRepository(this.db);
             Product = new ProductRepository(this.db);
+            Company = new CompanyRepository(this.db);
+            ShoppingCart = new ShoppingCartRepository(this.db);
+            ApplicationUser = new ApplicationUserRepository(this.db);
+            OrderDetail = new OrderDetailRepository(this.db);
+            OrderHeader = new OrderHeaderRepository(this.db);
+
         }
         public void Save()
         {

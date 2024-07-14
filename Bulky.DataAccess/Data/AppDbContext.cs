@@ -9,6 +9,12 @@ namespace BulkyBook.DataAccess
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers{ get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
         public AppDbContext(DbContextOptions<AppDbContext>options):base(options)
         {
 
@@ -21,6 +27,11 @@ namespace BulkyBook.DataAccess
                 new Category { Id = 1, Name = "Action", DisplayOrder = 1 },
                 new Category { Id = 2, Name = "SciFi", DisplayOrder = 1 },
                 new Category { Id = 3, Name = "History", DisplayOrder = 3 }
+                );
+            modelBuilder.Entity<Company>().HasData(
+                new Company { Id = 1, Name = "المعارف", StreetAddress = "134 Farouq st" ,State = "Egypt",City="Cairo" ,PostalCode="134578",PhoneNumber="0112567896"},
+                new Company { Id = 2, Name = "دار الكتب", StreetAddress = "574 Naser st" ,State = "Egypt",City="Cairo" ,PostalCode="236845",PhoneNumber="0100459546"},
+                new Company { Id = 3, Name = "جرير", StreetAddress = "134 Jing Faisel st" ,State = "Saudi Arabia",City="Riadh" ,PostalCode="896424",PhoneNumber="99457522631"}
                 );
             modelBuilder.Entity<Product>().HasData(
                new Product

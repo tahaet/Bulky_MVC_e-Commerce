@@ -10,14 +10,20 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using BulkyBook.Utility;
+using BulkyBook.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel;
+using BulkyBook.DataAccess.Repository.IRepository;
 
 namespace BulkyBookWeb.Areas.Identity.Pages.Account
 {
@@ -25,25 +31,30 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+		private readonly IUnitOfWork unitOfWork;
 
-        public RegisterModel(
+		public RegisterModel(
             UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-        }
+			this.unitOfWork = unitOfWork;
+		}
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -97,11 +108,45 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
-        }
+            public string? Role { get; set; }
+            [ValidateNever]
+            public IEnumerable<SelectListItem> Roles { get; set; }
+            [Required]
+            public string Name{ get; set; }
+            [Display(Name="Phone Number")]
+            public string? PhoneNumber { get; set; }
+            [Display(Name="Street Address")]
+            public string? StreetAddress { get; set; }
+            
+            public string? City { get; set; }
+            public string? State { get; set; }
+            [Display(Name="Postal Code")]
+            public string? PostalCode { get; set; }
+            public int? CompanyId{ get; set; }
+            [ValidateNever]
+			public IEnumerable<SelectListItem> Companies { get; set; }
+
+		}
 
 
-        public async Task OnGetAsync(string returnUrl = null)
+		public async Task OnGetAsync(string returnUrl = null)
         {
+            if(!_roleManager.RoleExistsAsync(SD.Role_Customer).GetAwaiter().GetResult())
+            {
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_Customer)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_Company)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_Employee)).GetAwaiter().GetResult();
+            }
+            Input = new()
+            {
+                Roles = _roleManager.Roles.Select(r => new SelectListItem()
+                {
+                    Text = r.Name,
+                    Value = r.Name
+                }),
+                Companies = unitOfWork.Company.GetAll().Select(c=>new SelectListItem() { Text=c.Name,Value=c.Id.ToString() })
+            };
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -116,12 +161,32 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.Name = Input.Name;
+                user.StreetAddress = Input.StreetAddress;
+                user.City = Input.City;
+                user.PostalCode = Input.PostalCode;
+                user.State = Input.State;
+                user.PhoneNumber = Input.PhoneNumber;
+                if (Input.Role == SD.Role_Company)
+                {
+                    user.CompanyId = Input.CompanyId;
+
+                }
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
 
+                    _logger.LogInformation("User created a new account with password.");
+                    if (!string.IsNullOrEmpty(Input.Role))
+                    {
+                        await _userManager.AddToRoleAsync(user, Input.Role);
+                    }
+                    else
+                        await _userManager.AddToRoleAsync(user, SD.Role_Customer);
+                    {
+
+                    }
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -149,16 +214,17 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
+            Input.Roles = _roleManager.Roles.Select(r => new SelectListItem() { Text = r.Name, Value = r.Name });
+            Input.Companies = unitOfWork.Company.GetAll().Select(r => new SelectListItem() { Text = r.Name, Value = r.Id.ToString() });
             // If we got this far, something failed, redisplay form
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private ApplicationUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<ApplicationUser>();
             }
             catch
             {
