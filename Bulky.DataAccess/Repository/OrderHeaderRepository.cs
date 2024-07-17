@@ -30,7 +30,7 @@ namespace Bulky.DataAccess.Repository
 			if (orderFromDb != null)
 			{
 				orderFromDb.OrderStatus = orderStatus;
-				if (string.IsNullOrEmpty(paymentStatus))
+				if (!string.IsNullOrEmpty(paymentStatus))
 				{
 					orderFromDb.PaymentStatus = paymentStatus;
 				}
@@ -42,11 +42,11 @@ namespace Bulky.DataAccess.Repository
 			var orderFromDb = _db.OrderHeaders.FirstOrDefault(u => u.Id == id);
 			if (orderFromDb is not null)
 			{
-				if (string.IsNullOrEmpty(paymentIntentId))
+				if (!string.IsNullOrEmpty(sessionId))
 				{
 					orderFromDb.SessionId = sessionId;
 				}
-				if (string.IsNullOrEmpty(paymentIntentId))
+				if (!string.IsNullOrEmpty(paymentIntentId))
 				{
 					orderFromDb.PaymentIntentId = paymentIntentId;
 					orderFromDb.PaymentDate = DateTime.Now;

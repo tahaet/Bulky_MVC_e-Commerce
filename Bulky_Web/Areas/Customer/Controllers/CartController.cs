@@ -6,9 +6,8 @@ using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
-using System.Diagnostics;
 using System.Security.Claims;
-using static System.Net.WebRequestMethods;
+
 
 namespace BulkyBookWeb.Areas.Customer.Controllers
 {
@@ -115,13 +114,13 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 			}
 			if (applicationUser.CompanyId.GetValueOrDefault() == 0)
 			{
-				ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
 				ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+				ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
 			}
 			else
 			{
-				ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
 				ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
+				ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
 			}
 			_unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
 			_unitOfWork.Save();
@@ -174,20 +173,21 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 			}
 			else
 			{
-			//company user
+				//company user
+				return RedirectToAction("OrderConfirmation", "Cart", new { id = ShoppingCartVM.OrderHeader.Id });
+			
 			}
-			return RedirectToAction(nameof(OrderConfirmation),"cart",new {id=ShoppingCartVM.OrderHeader.Id});
 		}
 		public IActionResult OrderConfirmation(int id)
 		{
-			OrderHeader orderHeader = _unitOfWork.OrderHeader.Get(o => o.Id == id);
+			OrderHeader orderHeader = _unitOfWork.OrderHeader.Get(o => o.Id == id,includeProperties:"ApplicationUser");
 			if (orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
 			{
 				var service = new SessionService();
 				Session session = service.Get(orderHeader.SessionId);
 				if (session.PaymentStatus.ToLower() == "paid")
 				{
-					_unitOfWork.OrderHeader.UpdateStripePaymentId(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
+					_unitOfWork.OrderHeader.UpdateStripePaymentId(id, session.Id, session.PaymentIntentId);
 					_unitOfWork.OrderHeader.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
 					_unitOfWork.Save();
 				}

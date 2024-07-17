@@ -1,53 +1,46 @@
 ﻿let dataTable;
-$("document").ready(() => loadDataTable())
-function loadDataTable() {
+$("document").ready(() => {
+
+    const url = window.location.search;
+    let filter;
+    if (url.includes("inprocess")) {
+        filter = "inprocess";
+    }
+    if (url.includes("completed")) {
+        filter = "completed";
+    }
+    if (url.includes("pending")) {
+        filter = "pending";
+    }
+    if (url.includes("approved")) {
+        filter = "approved";
+    }
+    if (url.includes("all")) {
+        filter = "all";
+    }
+    loadDataTable(filter);
+});
+function loadDataTable(filter) {
     dataTable = $('#tblData').DataTable({
-        "ajax": { url: '/admin/order/getall' },
+        "ajax": { url: '/admin/order/getall?status=' + filter },
         "columns": [
             { "data": "id", "width": "5%" },
-            { "data": "name", "width": "15%" },
+            { "data": "name", "width": "20%" },
             { "data": "phoneNumber", "width": "20%" },
-            { "data": "applicationUser.email", "width": "15%" },
+            { "data": "applicationUser.email", "width": "20%" },
             { "data": "orderStatus", "width": "10%" },
             { "data": "orderTotal", "width": "10%" },
             {
                 "data": "id",
                 "render": function (data) {
-                    return ` <div class="w-75 btn-group" role="group">
-                                 <a href="/admin/product/detail?orderid=${data}" class="btn btn-primary mx-2">
+                    return `<div class="w-75 btn-group" role="group">
+                                 <a href="/admin/order/details?orderid=${data}" class="btn btn-primary mx-2">
                                       <i class="bi bi-pencil-square"></i>
-                                  
                                  </a>
                             </div>`
                 },
-                "width":"25%"
+                "width": "10%"
             }
         ]
-    });
-}
-function Delete (url){
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                type: "DELETE",
-                success: (data) => {
-                    dataTable.ajax.reload();
-                    toastr.success(data.message);
-                },
-                error: () => {
-                    toastr.error("Couldn't delete product");
-                }
-
-            })
-        }
     });
 }
