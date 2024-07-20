@@ -3,6 +3,7 @@ using BulkyBook.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -45,9 +46,17 @@ namespace Bulky.DataAccess.Repository
 			return query.FirstOrDefault(filter);
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null,bool tracked = false)
         {
             IQueryable<T> query = _dbSet;
+            if (tracked)
+            {
+                query = _dbSet;
+            }
+            else
+            {
+                query = _dbSet.AsNoTracking();
+            }
             if (filter is not null) query = query.Where(filter);  
             if (!string.IsNullOrEmpty(includeProperties))
             {
