@@ -19,6 +19,12 @@ builder.Services.AddDbContext<AppDbContext>(
                 options=>options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+builder.Services.AddAuthentication().AddFacebook(options =>
+{
+    options.AppId = "1176993723547839";
+    options.AppSecret = "f001ac1bd987464f893344352cc56cfc";
+});
+
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 builder.Services.ConfigureApplicationCookie(options =>
 {
