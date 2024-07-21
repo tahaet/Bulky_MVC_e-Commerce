@@ -141,9 +141,10 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 			}
 			if (applicationUser.CompanyId.GetValueOrDefault() == 0)
 			{
-				//stripe logic
-				string domain = "https://localhost:7193/";
-				var options = new Stripe.Checkout.SessionCreateOptions
+                //stripe logic
+                var domain = $"{Request.Scheme}://{Request.Host.Value}/";
+
+                var options = new Stripe.Checkout.SessionCreateOptions
 				{
 					SuccessUrl = $"{domain}customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
 					CancelUrl = $"{domain}customer/cart/index",
