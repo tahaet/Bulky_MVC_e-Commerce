@@ -24,19 +24,31 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            var products = unitOfWork.Product.GetAll();
-            return View(products);
+            var products = unitOfWork.Product.GetAll(includeProperties: "ProductImages,Category");
+			return View(products);
         }
+        [HttpGet]
         public IActionResult Details(int id)
         {
-            ShoppingCart shoppingCart = new()
-            {
-                Product = unitOfWork.Product.Get(p => p.Id == id, includeProperties: "Category"),
-                Count = 1,
-                ProductId = id
-            };
-            return View(shoppingCart);
-        }
+			var product = unitOfWork.Product.Get(
+		    p => p.Id == id,
+		    includeProperties: "ProductImages,Category"
+			);
+
+			if (product == null)
+			{
+				return NotFound();
+			}
+
+			ShoppingCart shoppingCart = new ShoppingCart
+			{
+				Product = product,
+				Count = 1,
+				ProductId = id
+			};
+
+			return View(shoppingCart);
+		}
         [HttpPost]
         [Authorize]
         public IActionResult Details(ShoppingCart shoppingCart)
