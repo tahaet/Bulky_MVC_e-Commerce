@@ -11,8 +11,10 @@
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 	<link rel="stylesheet" href="~/BulkyBookWeb.styles.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
 	<link rel="stylesheet" href="//cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+
 </head>
 <body>
 
@@ -69,6 +71,13 @@
 											 <li class="nav-item">
 												   <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register" >Create User</a>
 											  </li>
+												  <li>
+													 <hr class="dropdown-divider">
+
+												 </li>
+												 <li class="nav-item">
+													   <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index" >Manage Users</a>
+												  </li>
 
 								  </ul>
 								</li>
@@ -102,10 +111,9 @@
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
-	<script src="https://cdn.tiny.cloud/1/gqo84dtprfhuc9wv4ocl3rdwm3syab3p18asexzub6klyfi3/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 	<script src="//cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+	<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
