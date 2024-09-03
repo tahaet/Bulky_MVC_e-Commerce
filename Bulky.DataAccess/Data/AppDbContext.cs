@@ -1,11 +1,12 @@
 ﻿using Bulky.Models;
 using BulkyBook.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BulkyBook.DataAccess
 {
-    public class AppDbContext:IdentityDbContext
+    public class AppDbContext:IdentityDbContext<IdentityUser>
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }

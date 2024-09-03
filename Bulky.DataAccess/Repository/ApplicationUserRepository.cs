@@ -1,12 +1,12 @@
-﻿using Bulky.DataAccess.Repository.IRepository;
-using Bulky.Models;
-using BulkyBook.DataAccess;
-using BulkyBook.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Bulky.DataAccess.Repository.IRepository;
+using Bulky.Models;
+using BulkyBook.DataAccess;
+using BulkyBook.Models;
 
 namespace Bulky.DataAccess.Repository
 {
@@ -14,11 +14,15 @@ namespace Bulky.DataAccess.Repository
     {
         private readonly AppDbContext _db;
 
-        public ApplicationUserRepository(AppDbContext db):base(db) 
+        public ApplicationUserRepository(AppDbContext db)
+            : base(db)
         {
             _db = db;
         }
-       
 
+        public void Update(ApplicationUser applicationUser)
+        {
+            _db.ApplicationUsers.Update(applicationUser);
+        }
     }
 }
