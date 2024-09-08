@@ -109,7 +109,6 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
 		[HttpPost]
 		[Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
-		[ValidateAntiForgeryToken]
 		public IActionResult UpdateOrderDetail()
 		{
 			var orderHEaderFromDb = _unitOfWork.OrderHeader.Get(u => u.Id == OrderVM.OrderHeader.Id, tracked: false);
@@ -135,7 +134,6 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
 		[HttpPost]
 		[Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
-		[ValidateAntiForgeryToken]
 		public IActionResult StartProcessing()
 		{
 			_unitOfWork.OrderHeader.UpdateStatus(OrderVM.OrderHeader.Id, SD.StatusInProcess,OrderVM.OrderHeader.PaymentStatus);
@@ -146,7 +144,6 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
 		[HttpPost]
 		[Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
-		[ValidateAntiForgeryToken]
 		public IActionResult ShipOrder()
 		{
 			var orderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == OrderVM.OrderHeader.Id, tracked: false);
@@ -166,7 +163,6 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
 		[HttpPost]
 		[Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
-		[ValidateAntiForgeryToken]
 		public IActionResult CancelOrder()
 		{
 			var orderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == OrderVM.OrderHeader.Id, tracked: false);
