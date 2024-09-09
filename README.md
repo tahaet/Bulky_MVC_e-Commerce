@@ -11,15 +11,19 @@ This is a Book Store E-Commerce application built with ASP.NET Core 8 MVC. The a
 ![image](https://github.com/user-attachments/assets/987c343d-af8a-47b5-8f7b-398a64db8f11)
 ![image](https://github.com/user-attachments/assets/99b44381-c436-4cf5-a2cd-e67826c41316)
 ![image](https://github.com/user-attachments/assets/60cd28fd-8a95-4998-b424-acf4f6e77628)
+![image](https://github.com/user-attachments/assets/8876403b-670b-4c88-a62d-5899f7eefa17)
+![image](https://github.com/user-attachments/assets/36dbeb96-aa57-4f3b-9eca-7f01dfb75e08)
 
 
 
 ## Features
 
 - **User Authentication & Authorization**: Manage login & Register using DotNet identity with role based resource access.
+- **Facebook user authentication**: With OAuth 2.0
 - **Book Store**: Browse and purchase books with a user-friendly interface.
 - **Company Account**: support for companies with special payment process.
 - **Bulky Purchases**: Support for purchasing books in bulk, including discounts and special handling.
+- **Shopping cart**: Support for all shopping cart business requirements.
 - **Stripe Payment Integration**: Seamless payment processing for book purchases.
 - **Admin Panel**: Manage and track application data, including users, orders, products, categories, companies and payments.
 
